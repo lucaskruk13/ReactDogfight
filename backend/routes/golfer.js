@@ -12,7 +12,7 @@ var ObjectID = require("mongodb").ObjectID;
 
 router.route("/").get((req, res) => {
   Golfer.find()
-    .then((golfer) => res.json(golfer))
+    .then((golfers) => res.json(golfers.sort(compare)))
     .catch((err) => res.status(400).json("Error: " + err));
 });
 
@@ -69,5 +69,17 @@ router.route("/:id/currentQuota").get((req, res) => {
     })
     .catch((err) => res.status(400).json("Error: " + err));
 });
+
+// Sort the dogfights by newest to oldest
+const compare = (a, b) => {
+  const aName = `${a.lastName}, ${a.firstName}`;
+  const bName = `${b.lastName}, ${b.firstName}`;
+  if (aName < bName) {
+    return -1;
+  } else if (aName > bName) {
+    return 1;
+  }
+  return 0;
+};
 
 module.exports = router;

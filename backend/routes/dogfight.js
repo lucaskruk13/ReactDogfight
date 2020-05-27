@@ -1,10 +1,11 @@
 const router = require("express").Router();
+const mongoose = require("mongoose");
 let Dogfight = require("../models/dogfight.model");
 let Golfer = require("../models/golfer.model");
 
 router.route("/").get((req, res) => {
   Dogfight.find()
-    .then((dogfight) => [res.json(dogfight.sort(compare))])
+    .then((dogfight) => [res.json(dogfight.sort(compare).slice(0, 2))])
     .catch((err) => res.status(400).json("Error: " + err));
 });
 
@@ -15,7 +16,7 @@ router.route("/upcoming").get((req, res) => {
         Math.abs(new Date() - new Date(d.date).getTime())
       );
       var idx = temp.indexOf(Math.min(...temp));
-      console.log(dogfights[idx]);
+
       res.json([dogfights[idx]]);
     })
     .catch((err) => res.status(400).json("Error: " + err));
@@ -54,10 +55,10 @@ router.route("/:id").get((req, res) => {
     .catch((err) => req.status(500).json(err));
 });
 
-router.route("/:dogfightId/addGolfer/:golferId").post((req, res) => {
-  Dogfight.findById(req.params.dogfightId)
+router.route("/addGolfer/").post((req, res) => {
+  Dogfight.findById(req.body.dogfightId)
     .then((dogfight) => {
-      Golfer.findById(req.params.golferId)
+      Golfer.findById(req.body.golferId)
         .then((golfer) => {
           dogfight.active_golfers.push({
             golferId: golfer.id,
@@ -68,7 +69,7 @@ router.route("/:dogfightId/addGolfer/:golferId").post((req, res) => {
           });
           dogfight
             .save()
-            .then((df) => res.json(df))
+            .then((df) => res.send("Fix this Lucas"))
             .catch((err) => res.status(400).json("Error: " + err));
         })
         .catch((err) => res.status(400).json("Error: " + err));
@@ -89,6 +90,55 @@ router.route("/:id/allGolfers/").get((req, res) => {
       });
     })
     .catch((err) => res.status(404).json("Error: " + err));
+});
+
+router.route("/postScoreForDogfight").post((req, res) => {
+  console.log(req.body);
+
+  Dogfight.findById(req.body.dogfight)
+    .then((dogfight) => {
+      dogfight.active_golfers.forEach((golfer) => {
+        if (golfer._id.toString() === req.body.scoreObjectId) {
+          // Check to see if the golfer is in the game
+          golfer.score = req.body.score;
+
+          Golfer.findById(golfer.golferId) // We need to also update the golfer itself
+            .then((g) => {
+              const [instance] = g.scores.filter(
+                //we need only one, destructure
+                // Dont forget to destructure
+                (score) => score.dogfight === dogfight._id.toString()
+              );
+
+              if (!instance) {
+                // If the doe not exist, create
+                const scoreObject = {
+                  score: req.body.score,
+                  course: dogfight.course,
+                  date: dogfight.date,
+                  dogfight: dogfight._id,
+                };
+                console.log(scoreObject);
+                g.scores.push(scoreObject);
+              } else {
+                // Update
+                g.scores.forEach((score) => {
+                  const localDogfight = score.dogfight;
+                  const dogfightID = dogfight._id.toString();
+                  if (score.dogfight === dogfight._id.toString()) {
+                    score.score = req.body.score;
+                  }
+                });
+              }
+              g.save();
+              dogfight.save();
+            })
+            .catch((err) => cres.status(500).json(err));
+        }
+      });
+    })
+    .catch((err) => res.status(500).json(err));
+  res.json({ status: 200, OK: true });
 });
 
 router.route("/postScore").post((req, res) => {

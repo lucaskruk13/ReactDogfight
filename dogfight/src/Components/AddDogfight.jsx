@@ -6,6 +6,7 @@ import DateFnsUtils from "@date-io/date-fns";
 import MenuItem from "@material-ui/core/MenuItem";
 import Select from "@material-ui/core/Select";
 import { makeStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
 
 import {
   MuiPickersUtilsProvider,
@@ -38,6 +39,7 @@ export default function AddDogfight() {
   const handleSubmit = (event) => {
     event.preventDefault();
 
+    console.log("Submitted");
     const newCourse = JSON.stringify({
       date: selectedDate.toISOString(),
       course: course,
@@ -87,6 +89,11 @@ export default function AddDogfight() {
                 <MenuItem value={"Panther Trail"}>Panther Trail</MenuItem>
                 <MenuItem value={"Lake Windcrest"}>Lake Windcrest</MenuItem>
               </Select>
+            </div>
+            <div>
+              <Button type="submit" value="Submit">
+                Submit
+              </Button>
             </div>
           </form>
         </Grid>

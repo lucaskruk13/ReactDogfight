@@ -18,6 +18,9 @@ var schema = new Schema({
       date: {
         type: Date,
       },
+      dogfight: {
+        type: String,
+      },
     },
   ],
   last5: [

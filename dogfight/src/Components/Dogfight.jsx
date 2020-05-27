@@ -1,14 +1,11 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardMedia from "@material-ui/core/CardMedia";
 import CardContent from "@material-ui/core/CardContent";
-
-import { red } from "@material-ui/core/colors";
-
 import PlayerTable from "./PlayerTable";
+import AddGolferSelect from "./AddGolferSelect";
 
 function getCourseImage(course) {
   if (course === "Panther Trail") return "pantherTrails.jpg";
@@ -25,38 +22,50 @@ const useStyles = makeStyles((theme) => ({
     height: 0,
     paddingTop: "56.25%", // 16:9
   },
-  expand: {
-    transform: "rotate(0deg)",
-    marginLeft: "auto",
-    transition: theme.transitions.create("transform", {
-      duration: theme.transitions.duration.shortest,
-    }),
-  },
-  expandOpen: {
-    transform: "rotate(180deg)",
-  },
-  avatar: {
-    backgroundColor: red[500],
-  },
 }));
 
 const Dogfight = (props) => {
   const classes = useStyles(); // Load CSS Classes
   const [dogfight] = useState(props.dogfight);
+  const [activeGolfers, setActiveGolfers] = useState(dogfight.active_golfers);
   const [dogfightDate] = useState(new Date(dogfight.date));
+  const [golfers] = useState(props.golfers);
+
+  const addGolfer = (golfer) => {
+    console.log(`Adding ${golfer.lastName} to Dogfight on ${dogfight.date}`);
+
+    const body = { dogfightId: dogfight._id, golferId: golfer._id };
+
+    fetch("http://localhost:8000/dogfights/addGolfer/", {
+      method: "POST",
+      headers: { "Content-Type": "application/JSON" },
+      body: JSON.stringify(body),
+    }).then((res) => {
+      const url = "http://localhost:8000/dogfights/" + dogfight._id;
+      fetch(url)
+        .then((data) => data.json())
+        .then((data) => {
+          const newDogfight = data.active_golfers;
+          setActiveGolfers(newDogfight);
+        })
+        .catch((err) => console.log(err));
+    });
+  };
+
   return (
     <Card>
       <CardHeader
         title={dogfightDate.toLocaleDateString()}
         subheader={props.dogfight.course}
+        action={<AddGolferSelect golfers={golfers} update={addGolfer} />}
       />
       <CardMedia
         className={classes.media}
         image={require(`./images/${getCourseImage(dogfight.course)}`)}
-        title="Paella dish"
+        title={dogfight.course}
       />
       <CardContent>
-        <PlayerTable golfers={dogfight.active_golfers} />
+        <PlayerTable golfers={activeGolfers} dogfightId={dogfight._id} />
       </CardContent>
     </Card>
   );

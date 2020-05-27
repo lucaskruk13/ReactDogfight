@@ -12,7 +12,9 @@ const useStyles = makeStyles((theme) => ({
 const DogfightList = (props) => {
   const classes = useStyles();
   const [dogfights, setDogfights] = useState(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [golfers, setGolfers] = useState(null);
+  const [isDogfightLoaded, setIsDogfightLoaded] = useState(false);
+  const [isGolfersLoaded, setIsGolfersLoaded] = useState(false);
 
   // Get The Dogfight List
   useEffect(() => {
@@ -20,12 +22,20 @@ const DogfightList = (props) => {
       .then((data) => data.json())
       .then((data) => {
         setDogfights(data);
-        setIsLoaded(true);
+        setIsDogfightLoaded(true);
+      })
+      .catch((err) => console.log(err));
+
+    fetch("http://localhost:8000/golfers/")
+      .then((data) => data.json())
+      .then((data) => {
+        setGolfers(data);
+        setIsGolfersLoaded(true);
       })
       .catch((err) => console.log(err));
   }, []);
 
-  if (isLoaded) {
+  if (isDogfightLoaded && isGolfersLoaded) {
     return (
       <div className={classes.root}>
         <Grid container justify="center">
@@ -36,7 +46,7 @@ const DogfightList = (props) => {
               style={{ marginBottom: "25px" }}
               key={dogfight._id}
             >
-              <Dogfight dogfight={dogfight} />
+              <Dogfight dogfight={dogfight} golfers={golfers} />
             </Grid>
           ))}
         </Grid>

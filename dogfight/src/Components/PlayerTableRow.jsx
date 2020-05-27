@@ -14,8 +14,8 @@ const PlayerTableRow = (props) => {
   const [score, setScore] = useState(golfer.score);
   const [result, setResult] = useState(formatScore(score, quota));
 
-  const toggle = () => {
-    if (isEditing) {
+  const toggle = (event) => {
+    if (isEditing && score !== 0) {
       setResult(formatScore(score, quota));
       props.update(golfer, score);
     }
@@ -26,7 +26,7 @@ const PlayerTableRow = (props) => {
   const changeScore = (event) => {
     const target = event.target;
 
-    setScore(target.value);
+    setScore(parseInt(target.value, 10));
   };
 
   if (isEditing) {
@@ -38,7 +38,7 @@ const PlayerTableRow = (props) => {
         <TableCell>{quota}</TableCell>
         <TableCell>
           <TextField
-            defaultValue={score}
+            defaultValue=""
             type="number"
             label="Edit Score"
             onChange={changeScore}
@@ -60,8 +60,8 @@ const PlayerTableRow = (props) => {
         {lastName}, {firstName}
       </TableCell>
       <TableCell>{quota}</TableCell>
-      <TableCell>{score}</TableCell>
-      <TableCell>{result}</TableCell>
+      <TableCell>{score === 0 ? "--" : score}</TableCell>
+      <TableCell>{score === 0 ? "--" : result}</TableCell>
       <TableCell>
         <IconButton edge="end" aria-label="Edit" onClick={toggle}>
           <EditIcon />

@@ -5,12 +5,15 @@ let Golfer = require("../models/golfer.model");
 
 router.route("/").get((req, res) => {
   Dogfight.find()
-    .then((dogfight) => [res.json(dogfight.sort(compare).slice(0, 2))])
+    .then((dogfight) => {
+      return [res.json(dogfight.sort(compare).slice(0, 2))];
+    })
     .catch((err) => res.status(400).json("Error: " + err));
 });
 
 router.route("/upcoming").get((req, res) => {
   Dogfight.find()
+
     .then((dogfights) => {
       var temp = dogfights.map((d) =>
         Math.abs(new Date() - new Date(d.date).getTime())

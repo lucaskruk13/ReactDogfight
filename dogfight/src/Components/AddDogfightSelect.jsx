@@ -10,6 +10,9 @@ import Input from "@material-ui/core/Input";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
+import Fab from "@material-ui/core/Fab";
+import AddIcon from "@material-ui/icons/Add";
+import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -20,22 +23,22 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1),
     minWidth: 120,
   },
-  addGolferRoot: {
+  addDogfightRoot: {
     marginTop: "15px",
+  },
+  fab: {
+    position: "fixed",
+    bottom: theme.spacing(2),
+    right: theme.spacing(2),
   },
 }));
 
 export default function AddGolferSelect(props) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
+  const [dogfight, setDogfight] = React.useState("");
 
-  const [golfers] = React.useState(props.golfers);
-  const [golfer, setGolfer] = React.useState("");
-
-  const handleChange = (event) => {
-    const [gUnit] = golfers.filter((g) => event.target.value._id === g._id);
-    setGolfer(gUnit || "");
-  };
+  const handleChange = (event) => {};
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -43,39 +46,40 @@ export default function AddGolferSelect(props) {
 
   const handleClose = (e) => {
     if (e === "Close") {
-      props.update(golfer);
-      setGolfer("");
     }
     setOpen(false);
   };
 
   return (
-    <div className={classes.addGolferRoot}>
-      <Button onClick={handleClickOpen}>Add Golfer</Button>
+    <div className={classes.addDogfightRoot}>
+      <Fab
+        aria-label="Add"
+        className={classes.fab}
+        color="primary"
+        variant="extended"
+        onClick={handleClickOpen}
+      >
+        <AddIcon />
+        <Typography>Dogfight</Typography>
+      </Fab>
       <Dialog
         disableBackdropClick
         disableEscapeKeyDown
         open={open}
         onClose={handleClose}
       >
-        <DialogTitle>Fill the form</DialogTitle>
+        <DialogTitle>Add a Dogfight</DialogTitle>
         <DialogContent>
           <form className={classes.container}>
             <FormControl className={classes.formControl}>
-              <InputLabel id="add-golfer-select-label">Golfer</InputLabel>
+              <InputLabel id="add-dogfight-select-label">Dogfight</InputLabel>
               <Select
-                labelId="add-golfer-select-label"
-                id="add-golfer-select"
-                value={golfer}
+                labelId="add-dogfight-select-label"
+                id="add-dogfight-select"
+                value={dogfight}
                 onChange={handleChange}
                 input={<Input />}
-              >
-                {golfers.map((golfer) => (
-                  <MenuItem value={golfer} key={golfer._id}>
-                    {golfer.lastName}, {golfer.firstName}
-                  </MenuItem>
-                ))}
-              </Select>
+              ></Select>
             </FormControl>
           </form>
         </DialogContent>

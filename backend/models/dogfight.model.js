@@ -12,6 +12,7 @@ var Dogfight = mongoose.model("Dogfights", {
       lastName: String,
       quota: Number,
       score: Number,
+      teeTime: Date,
     },
   ],
   waitlist_golfers: {

@@ -4,6 +4,7 @@ import TableCell from "@material-ui/core/TableCell";
 import EditIcon from "@material-ui/icons/Edit";
 import IconButton from "@material-ui/core/IconButton";
 import TextField from "@material-ui/core/TextField";
+import moment from "moment";
 
 const PlayerTableRow = (props) => {
   const [golfer] = useState(props.golfer);
@@ -13,6 +14,7 @@ const PlayerTableRow = (props) => {
   const [quota] = useState(golfer.quota);
   const [score, setScore] = useState(golfer.score);
   const [result, setResult] = useState(formatScore(score, quota));
+  const [teeTime] = useState(props.golfer.teeTime);
 
   const toggle = (event) => {
     if (isEditing && score !== 0) {
@@ -59,6 +61,7 @@ const PlayerTableRow = (props) => {
       <TableCell>
         {lastName}, {firstName}
       </TableCell>
+      <TableCell>{formatTime(teeTime)}</TableCell>
       <TableCell>{quota}</TableCell>
       <TableCell>{score === 0 ? "--" : score}</TableCell>
       <TableCell>{score === 0 ? "--" : result}</TableCell>
@@ -77,6 +80,11 @@ const formatScore = (a, b) => {
   if (score > 0) return `+${score}`;
   if (score === 0) return "E";
   return score;
+};
+
+const formatTime = (time) => {
+  const teeTime = moment(time);
+  return teeTime.format("LT");
 };
 
 export default PlayerTableRow;

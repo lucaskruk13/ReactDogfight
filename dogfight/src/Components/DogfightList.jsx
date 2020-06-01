@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Grid from "@material-ui/core/Grid";
 import Dogfight from "./Dogfight";
 import { makeStyles } from "@material-ui/core/styles";
-
+import AddDogfightSelect from "./AddDogfightSelect";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -35,6 +35,10 @@ const DogfightList = (props) => {
       .catch((err) => console.log(err));
   }, []);
 
+  const handleAddDogfight = () => {
+    console.log("Adding Dogfight");
+  };
+
   if (isDogfightLoaded && isGolfersLoaded) {
     return (
       <div className={classes.root}>
@@ -50,6 +54,7 @@ const DogfightList = (props) => {
             </Grid>
           ))}
         </Grid>
+        <AddDogfightSelect />
       </div>
     );
   }

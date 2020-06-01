@@ -8,12 +8,17 @@ import TableCell from "@material-ui/core/TableCell";
 import PlayerTableRow from "./PlayerTableRow";
 
 const PlayerTable = (props) => {
-  const [golfers, setGolfers] = useState(props.golfers.sort(compare));
+  const [isScored] = useState(props.golfers[0].score === 0 ? false : true);
+  const [golfers, setGolfers] = useState(
+    isScored ? props.golfers.sort(compare) : props.golfers.sort(nameCompare)
+  );
 
   useEffect(() => {
     // When we add a new golfer in the dogfight class, we need to rerender the table from the props
-    setGolfers(props.golfers.sort(compare));
-  }, [props.golfers]);
+
+    setGolfers(isScored ? golfers.sort(compare) : golfers.sort(nameCompare));
+    console.log(golfers);
+  }, [golfers, isScored]);
 
   const reorder = (new_golfer, new_score) => {
     // Staying functional
@@ -52,6 +57,7 @@ const PlayerTable = (props) => {
           <TableHead>
             <TableRow>
               <TableCell>Golfer</TableCell>
+              <TableCell>Tee Time</TableCell>
               <TableCell>Quota</TableCell>
               <TableCell>Score</TableCell>
               <TableCell>Result</TableCell>
@@ -78,6 +84,18 @@ const PlayerTable = (props) => {
 const compare = (a, b) => {
   if (a.score - a.quota < b.score - b.quota) return 1;
   if (a.score - a.quota > b.score - b.quota) return -1;
+  return 0;
+};
+
+const nameCompare = (a, b) => {
+  const aName = `${a.lastName}, ${a.firstName}`;
+  const bName = `${b.lastName}, ${b.firstName}`;
+
+  if (aName < bName) {
+    return -1;
+  } else if (aName > bName) {
+    return 1;
+  }
   return 0;
 };
 
